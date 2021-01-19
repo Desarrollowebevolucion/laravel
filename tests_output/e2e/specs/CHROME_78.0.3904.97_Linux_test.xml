@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites errors="0"
+            failures="0"
+            tests="1">
+
+  <testsuite name="e2e.specs.test"
+    errors="0" failures="0" hostname="" id="" package="specs" skipped="0"
+    tests="1" time="7.479" timestamp="">
+  
+    <testcase name="CoreUI Vue e2e tests" classname="e2e.specs.test" time="7.479" assertions="9">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    </testcase>
+  
+
+  
+
+  
+  </testsuite>
+</testsuites>
