@@ -34,6 +34,20 @@ class UsersController extends Controller
         return response()->json( compact('users', 'you') );
     }
 
+    public function getRoles(Request $request){
+     return auth()->user()->roles;
+
+    }
+    public function changeRole(Request $request){
+        $user = User::find(auth()->user()->id);
+        $user->menuroles=$request->option;
+        $user->save();
+        return response()->json([
+            'code' => 200
+        ]);
+
+
+    }
     /**
      * Display the specified resource.
      *

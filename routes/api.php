@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 Route::group(['middleware' => 'api'], function ($router) {
     Route::get('langlist', 'LocaleController@getLangList');
-    Route::get('menu', 'MenuController@index');
+    Route::post('menu', 'MenuController@index');
 
     Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
@@ -25,6 +25,12 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::resource('notes', 'NotesController');
 
     Route::resource('resource/{table}/resource', 'ResourceController');
+    
+    Route::post('users/getroles','UsersController@getRoles');
+    Route::post('users/changerole','UsersController@changeRole');
+
+
+  
 
     Route::group(['middleware' => 'admin'], function ($router) {
 

@@ -16,13 +16,9 @@ class MenuController extends Controller
      */
     public function index(Request $request)
     {
-        //if (session()->has('locale')) {
-        //    App::setLocale(session()->get('locale'));
-        //}
         App::setLocale($request->locale);
         try {
            $user = auth()->user();//get user auth
-         // $user=Auth::user();
             if($user && !empty($user)){
                 $roles =  $user->menuroles;
             }else{

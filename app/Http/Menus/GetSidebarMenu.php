@@ -42,8 +42,8 @@ class GetSidebarMenu implements MenuInterface{
     //     $this->getMenuFromDB($menuName, 'admin', $locale);
     // }
 
-    public function get($roles, $locale, $menuName = 'sidebar menu'){
-        $roles = explode(',', $roles);
+    public function get($role, $locale, $menuName = 'sidebar menu'){
+        //$roles = explode(',', $roles);
        // if(empty($roles)){
         //  //   $roles='guest';
         //     $this->getGuestMenu($locale, $menuName);
@@ -55,9 +55,9 @@ class GetSidebarMenu implements MenuInterface{
         //     $this->getGuestMenu($locale, $menuName);
         // }
 
-        if(empty($roles)){$roles="guest";}
-        $this->getMenuFromDB($menuName,$roles[0],$locale);
+        if($role==""){$role="guest";}
 
+        $this->getMenuFromDB($menuName,$role,$locale);
         $rfd = new RenderFromDatabaseData;
       return $rfd->render($this->menu);
     //  return $this->menu;
