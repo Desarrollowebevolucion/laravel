@@ -92,13 +92,25 @@ class AuthController extends Controller
      */
     protected function respondWithToken($token, $email)
     {
-        $user = User::select('menuroles as roles')->where('email', '=', $email)->first();
-
+        $user = User::where('email', '=', $email)->first();
+        $active=403;
+        switch($user->status){
+        case 'Active':
+            $active=200;
+            break;
+        case 'Pending':
+            $active=200;
+            case'Banned':
+            $active=403;
+        }
         return response()->json([
-            'access_token' => $token,
+            'token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'roles' => $user->roles    
+            'roles' =>$user->roles,
+            'user'=>$user  ,
+            'nuevo'=>$user->firstlog  
+            ,'code'=>$active,
         ]);
     }
 }
