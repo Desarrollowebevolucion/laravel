@@ -17,12 +17,14 @@ class MenuController extends Controller
     public function index(Request $request)
     {
         App::setLocale($request->locale);
+        $code='200';
         try {
            $user = auth()->user();//get user auth
             if($user && !empty($user)){
                 $roles =  $user->menuroles;
             }else{
                 $roles = '';
+                $code='404';
             }
         } catch (Exception $e) {
             $roles = '';
@@ -33,7 +35,7 @@ class MenuController extends Controller
             $menuName = 'sidebar menu';
         } 
         $menus = new GetSidebarMenu();
-       return response()->json( $menus->get( $roles, App::getLocale(), $menuName));
+       return response()->json( ['data'=>$menus->get( $roles, App::getLocale(), $menuName),'code'=>$code]);
     // return $menuName;
     }
 

@@ -28,6 +28,7 @@ Route::group(['middleware' => 'api'], function ($router) {
     
     Route::post('users/getroles','UsersController@getRoles');
     Route::post('users/changerole','UsersController@changeRole');
+    Route::post('users/setlang','UsersController@setLang');
 
 
   

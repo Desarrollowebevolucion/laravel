@@ -35,7 +35,11 @@ class UsersController extends Controller
     }
 
     public function getRoles(Request $request){
-     return auth()->user()->roles;
+
+        return response()->json([
+            'code' => 200,
+            'data'=> auth()->user()->roles
+        ]);
 
     }
     public function changeRole(Request $request){
@@ -45,7 +49,14 @@ class UsersController extends Controller
         return response()->json([
             'code' => 200
         ]);
-
+    }
+        public function setLang(Request $request){
+            $user = User::find(auth()->user()->id);
+            $user->lang=$request->option;
+            $user->save();
+            return response()->json([
+                'code' => 200
+            ]);
 
     }
     /**

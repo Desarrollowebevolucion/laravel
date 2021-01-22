@@ -14,6 +14,6 @@ class LocaleController extends Controller
      */
     public function getLangList()
     {
-        return response()->json( MenuLangList::all() );
+        return response()->json(['data'=> MenuLangList::all(),'code'=>200] );
     }
 }
