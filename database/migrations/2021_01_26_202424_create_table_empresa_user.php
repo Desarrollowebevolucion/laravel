@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddLang extends Migration
+class CreateTableEmpresaUser extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,15 @@ class AddLang extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->text('sistema_id')->nullable();
+        Schema::create('empresa_user', function (Blueprint $table) {
+            //
+            $table->id();
+                    $table->text('empresa_id');
+                    
+                    $table->text('user_id');
+                    
+
+            $table->timestamps();
 
         });
     }
@@ -26,9 +33,7 @@ class AddLang extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-           $table->dropColumn('sistema_id');
+        Schema::dropIfExists('empresa_user');
 
-        });
     }
 }

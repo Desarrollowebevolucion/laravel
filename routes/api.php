@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['middleware' => 'api'], function ($router) {
+    Route::post('pruebas', 'AuthController@pruebas');
+
     Route::get('langlist', 'LocaleController@getLangList');
     Route::post('menu', 'MenuController@index');
 
@@ -30,6 +32,16 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('users/changerole','UsersController@changeRole');
     Route::post('users/setlang','UsersController@setLang');
 
+    Route::group(['prefix' => '/user'], function () {
+
+    Route::post('update','UsersController@update');
+    Route::post('pruebaimagen','UsersController@pruebaimagen');
+    Route::post('refresh', 'UsersController@refreshpass');
+    Route::post('allusers', 'UsersController@allusers');
+    Route::post('setMetodo', 'UsersController@SetMetodo');
+
+
+});
 
   
 

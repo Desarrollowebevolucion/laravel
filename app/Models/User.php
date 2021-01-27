@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use cuenta;
+use App\Models\producto;
+use App\Models\solicitud;
+use App\Models\permisosforuser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -52,7 +56,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','id'
     ];
 
     /**
@@ -73,4 +77,70 @@ class User extends Authenticatable implements JWTSubject
     //];
 
     protected $guard_name = 'api';
+    public function empresa()
+    {
+        return $this->belongsToMany(empresa::class);
+    }
+
+    public function cuentas()
+    {
+        return $this->belongsToMany(cuenta::class, 'cuenta_bancaria_has_user', 'user_id', 'cuenta_bancaria_id');
+    }
+    public function solicitudsend()
+    {
+        ///relacion de enviados
+        return $this->belongsToMany(solicitud::class, 'solicitud_user', 'id_send', 'solicitud_id')
+            ->withPivot('id_send', 'id_in', 'solicitud_id', 'id');
+    }
+    public function producto(){return $this->belongsToMany(producto::class,'producto_user');}
+
+    public function solicitudin()
+    {
+        ///relacion de recibidos
+        return $this->belongsToMany(solicitud::class, 'solicitud_user', 'id_in', 'solicitud_id')
+            ->withPivot('id_send', 'id_in', 'solicitud_id');
+    }
+    public function myusers()
+    {
+        //relacion de usuarios creados
+        return $this->belongsToMany(User::class, 'user_user', 'id_padre', 'id_hijo')
+            ->withPivot('id_padre', 'id_hijo','activo','bloquea');
+
+
+
+    }
+    public function usuariosquemeaceptaron()/////funcion para hacer la contra a la funcion de arriba
+    {
+        //relacion de usuarios creados
+        return $this->belongsToMany(User::class, 'user_user', 'id_hijo', 'id_padre')
+            ->withPivot('id_padre', 'id_hijo','activo','bloquea');
+    }
+    public function myroles()
+    {
+        //relacion de usuarios creados
+        return $this->belongsToMany(Role::class, 'roles_users', 'user_id', 'role_id');
+    }
+
+    public function permissions_received()
+    {
+        //relacion de usuarios y permisos delegados a usuarios
+        return $this->belongsToMany(User::class, 'permissions_user_user', 'hijo_id', 'padre_id')
+            ->withPivot('padre_id', 'hijo_id','permiso_id');
+    }
+
+    public function myrequestfriend()
+    {
+        //relacion de usuarios y permisos delegados a usuarios
+        return $this->belongsToMany(User::class, 'requestfriend', 'id_send', 'id_in')
+            ->withPivot('id_send', 'id_in','response','id');
+    }
+    public function myrequestfriendin()
+    {
+        return $this->belongsToMany(User::class, 'requestfriend', 'id_in', 'id_send')
+        ->withPivot('id_send', 'id_in','response','id');
+    }
+    public function sistema(){
+
+        return $this->belongsTo(sistema::class);
+    }
 }
