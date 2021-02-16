@@ -9,5 +9,6 @@ class sistema extends Model
 {
     use HasFactory;
     protected $table="sistema";
+    protected $guarded  = ['id'];
 
 }

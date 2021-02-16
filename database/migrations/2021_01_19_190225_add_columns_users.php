@@ -26,7 +26,6 @@ class AddColumnsUsers extends Migration
             $table->text('referencias')->nullable();
             $table->text('telefono')->nullable();
             $table->text('nickname')->nullable();
-            $table->text('firstlog')->nullable();
             $table->text('update')->nullable();
 
        });

@@ -177,6 +177,8 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         App\Repositories\LazyTable\LazyTableServiceProvider::class,
+        App\Repositories\UserTables\UserTableServiceProvider::class,
+
         App\Repositories\FoldersAndFiles\FoldersAndFilesServiceProvider::class,
     ],
 

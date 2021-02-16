@@ -15,32 +15,39 @@ use Illuminate\Http\Request;
 
 Route::group(['middleware' => 'api'], function ($router) {
     Route::post('pruebas', 'AuthController@pruebas');
-
     Route::get('langlist', 'LocaleController@getLangList');
     Route::post('menu', 'MenuController@index');
-
     Route::post('login', 'AuthController@login');
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::post('register', 'AuthController@register'); 
-
     Route::resource('notes', 'NotesController');
-
     Route::resource('resource/{table}/resource', 'ResourceController');
-    
-    Route::post('users/getroles','UsersController@getRoles');
+   Route::post('users/getroles','UsersController@getRoles');
     Route::post('users/changerole','UsersController@changeRole');
     Route::post('users/setlang','UsersController@setLang');
 
     Route::group(['prefix' => '/user'], function () {
+    Route::post('lockuser', 'UsersController@lockuser');
+    Route::post('yourrequest', 'UsersController@yourrequest');
+    Route::post('aceptrequest', 'UsersController@aceptrequest');
+    Route::post('lockuserrequest', 'UsersController@lockuserrequest');
+    
+
+    Route::post('cancelrequestin', 'UsersController@cancelrequestin');
+    Route::post('cancelrequest', 'UsersController@cancelrequest');
+    Route::post('allusers', 'UsersController@allusers');
+    Route::post('unlockuser', 'UsersController@unlockuser');
+    Route::post('createorrequest', 'UsersController@createorrequest');
 
     Route::post('update','UsersController@update');
     Route::post('pruebaimagen','UsersController@pruebaimagen');
     Route::post('refresh', 'UsersController@refreshpass');
-    Route::post('allusers', 'UsersController@allusers');
+    Route::post('allusersonlypost', 'UsersController@allusersonlypost');///solo lista de tus usuarios
     Route::post('setMetodo', 'UsersController@SetMetodo');
+    Route::post('interfaceuser', 'UsersController@interfaceuser');
 
-
+    
 });
 
   

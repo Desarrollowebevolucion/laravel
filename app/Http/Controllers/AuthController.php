@@ -1,16 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\User;
 use App\Models\empresa;
+use App\Traits\Mytrait;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Repositories\UserTables\UserTableInterface as UserTableInterface;
 
 class AuthController extends Controller
 { 
+
+    use Mytrait;
     /**
      * Create a new AuthController instance.
      *
@@ -69,9 +74,10 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function pruebas(){
-
-         $user=User::findorfail(1);
-         return $user->roles[0]->name;
+        $query=User::where('id','=',1)->with('myusers')->with('usuariosquemeaceptaron')->first();
+        $array=[$query->myusers,$query->usuariosquemeaceptaron];
+        $userscomplete=$this->depura($array);
+        return $userscomplete[0][0];
          if($user->sistema){
              if($user->sistema->lang){
                         return $user->sistema->lang;
@@ -139,13 +145,38 @@ class AuthController extends Controller
        'requestin'=>$requestsend[0]['myrequestfriendin'],
        'code' => 200,'sys'=>$query[0]['myusers'][0]
    ]);
+
+
+
+    }
+    private function depura($array){
+        $users=[];
+        $delete=[];
+        $mebloquearon=[];
+        for($b=0;$b<count($array);$b++){
+         for($a=0;$a<count($array[$b]);$a++){
+             if($array[$b][$a]['status']=='Active'){
+       if($array[$b][$a]['pivot']['activo']==1||$array[$b][$a]['pivot']['activo']==NULL){
+                      array_push($users,$array[$b][$a]);
+                     }else{
+                         if($array[$b][$a]['pivot']['bloquea']==auth()->user()->id){
+                             array_push($delete,$array[$b][$a]);
+                         }else{
+                             array_push($mebloquearon,$array[$b][$a]);
+    
+                         }
+                     }
+                 }
+         }     
+        }
+         $complete=[0=>$users,1=>$delete,2=>$mebloquearon];
+        return $complete;
+ 
     }
     public function logout(Request $request)
     {   
-
-            
-        $user=new UsersController();
-        $user->updatesistema($request);
+                  
+        $this->updatesistema($request);
         auth()->logout();
 
         return response()->json(['message' => 'Successfully logged out']);
