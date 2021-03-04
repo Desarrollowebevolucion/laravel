@@ -164,4 +164,26 @@ class RolesController extends Controller
             return response()->json( ['status' => 'success'] );
         }
     }
+
+    public function getall()
+    {
+        $roles = Role::where('name','!=','Super_Admin')->get();
+        $rolespermisos = [];
+        foreach ($roles as $role) {
+            array_push($rolespermisos, [
+                'id' => $role->id,
+                'name' => $role->name,
+                'permissions' => $role->getAllPermissions()
+            ]);
+        }
+        $permisos = Permission::all();
+        return response()->json([
+            'data' =>
+            [
+                'roles' => $rolespermisos,
+                'allpermisos' => $permisos,
+            ],
+            'code' => 200
+        ]);
+    } 
 }

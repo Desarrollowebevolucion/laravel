@@ -28,18 +28,24 @@ Route::group(['middleware' => 'api'], function ($router) {
     Route::post('users/setlang','UsersController@setLang');
 
     Route::group(['prefix' => '/user'], function () {
+
     Route::post('lockuser', 'UsersController@lockuser');
     Route::post('yourrequest', 'UsersController@yourrequest');
     Route::post('aceptrequest', 'UsersController@aceptrequest');
     Route::post('lockuserrequest', 'UsersController@lockuserrequest');
-    
+    Route::post('resetpassword', 'UsersController@resetpassword');
+    Route::post('lockadmin', 'UsersController@lockadmin');
+    Route::post('unlockadmin', 'UsersController@unlockadmin');
 
+    
     Route::post('cancelrequestin', 'UsersController@cancelrequestin');
     Route::post('cancelrequest', 'UsersController@cancelrequest');
-    Route::post('allusers', 'UsersController@allusers');
+    Route::post('allusers', 'UsersController@getallusers');
     Route::post('unlockuser', 'UsersController@unlockuser');
     Route::post('createorrequest', 'UsersController@createorrequest');
-
+    Route::post('restore','UsersController@restoreuser');
+    Route::post('create','UsersController@created');
+    Route::post('updatedesdeadmin', 'UsersController@updatedesdeadmin');
     Route::post('update','UsersController@update');
     Route::post('pruebaimagen','UsersController@pruebaimagen');
     Route::post('refresh', 'UsersController@refreshpass');
@@ -53,6 +59,22 @@ Route::group(['middleware' => 'api'], function ($router) {
   
 
     Route::group(['middleware' => 'admin'], function ($router) {
+
+        Route::group(['prefix' => '/user'], function () {
+            Route::post('updateuser', 'UsersController@updateuser');
+            Route::post('addrole', 'UsersController@addrolesandpermissionsuser');
+            Route::post('interfaceuseradmin', 'UsersController@interfaceuseradmin');
+
+        
+
+        });
+
+              Route::group(['prefix' => '/role'], function () {
+            Route::post('all', 'RolesController@getall');
+            Route::post('update', 'RolesController@update');
+            Route::post('create', 'RolesController@create');
+            Route::post('destroy', 'RolesController@destroy');
+        });
 
         Route::resource('mail',        'MailController');
         Route::get('prepareSend/{id}', 'MailController@prepareSend')->name('prepareSend');
@@ -107,6 +129,7 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::resource('roles',               'RolesController');
         Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');
         Route::get('/roles/move/move-down',    'RolesController@moveDown')->name('roles.down');
+
     });
 
     Route::post('lazyTable', 'LazyTableController@index');

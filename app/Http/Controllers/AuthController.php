@@ -6,16 +6,25 @@ use App\Models\User;
 use App\Models\empresa;
 use App\Traits\Mytrait;
 
+use Illuminate\Support\Collection;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Validator;
 use App\Repositories\UserTables\UserTableInterface as UserTableInterface;
+use App\Traits\Paginador;
+use App\Traits\joinobjectsforid;
 
 class AuthController extends Controller
 { 
-
+    
     use Mytrait;
+    use joinobjectsforid;
+    use Paginador;
     /**
      * Create a new AuthController instance.
      *
@@ -74,6 +83,94 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function pruebas(){
+        $ids="";
+       $asc="asc";
+       $array = array(0 => 'blue', 1 => 'red', 2 => 'gris', 3 => 'red');
+
+        $key = in_array('as', $array); // $key = 2;
+            return $key;
+       return User::Userreturn(2);
+       $db=Role::usersComplete();
+       return $db->get();
+       $db=Role::query()
+      
+       ->with(['users'=>function($query){
+         $query->where('id',"!=",1)
+         ->with('permissions')
+         ->with(['roles'=>function($query){$query->with('permissions');}]);
+       }])
+        ->orderby('roles.name',$asc)->get()->toarray();
+
+     //  ->paginate(1,['*'],'page',1);
+         //$db->users;
+        $usrescomplete12=[];
+         for($a=0;$a<count($db);$a++){
+            
+            $usrescomplete12=array_merge($usrescomplete12,$db[$a]['users']);
+
+             
+         }
+        
+            $arraynuevo=$this->depuraobject($usrescomplete12);
+
+
+
+
+        $users = User::where('id',"!=",1)
+        ->with(['roles'=>function($query){$query->with('permissions');}])
+        ->with('permissions')
+        ->get()->toarray();
+
+           // $user22=[2,123,4,345,345,456,567,3];
+          //  $complete=array_merge($user22,$users);  
+        return $arraynuevo;
+        return $this->paginate($users,5,2);
+        define("FOO","ADMIN");
+
+     
+
+        $db =User::where('id',"!=",1)
+        
+        ->whereHas('roles', function (Builder $query) {
+            $columnFilter=[];
+         $columnFilter['name']=FOO;
+            $query->where('name', 'like', '%' . $columnFilter['name'] . '%');
+        
+        }) 
+         ->with(['roles'=>function($query){$query->with('permissions');}])
+        ->with('permissions')
+      
+        
+        ->get();
+      
+
+           
+
+            return $db;
+        
+        $arrelgo=[6,7,8,1,2,3];
+        $db =User::whereIn('id',$arrelgo)
+        ->with(array(
+            'roles'=>function($query){
+           //$query->where('name','=','admin');
+           $query->with('permissions');
+        
+        }
+        
+        )
+    )
+        ->with('permissions');
+    
+        $buscar= $db->get();
+        $conroles=$this->agregaparametro($buscar,'roles','allroles');
+       // return $buscar[0]->roles[0]['name'];
+         
+        
+      // $prueba=$this->buscapropiedad($buscar,'roles','admin');
+                return $conroles;
+        $query=User::where('id','=',1)->with('myusers')->with('usuariosquemeaceptaron')->first();
+
+        return $query->myusers[0];
         $query=User::where('id','=',1)->with('myusers')->with('usuariosquemeaceptaron')->first();
         $array=[$query->myusers,$query->usuariosquemeaceptaron];
         $userscomplete=$this->depura($array);
@@ -149,6 +246,37 @@ class AuthController extends Controller
 
 
     }
+    private function agregaparametro($array,$param,$propiedad){
+            $arraynuevo=[];
+        for($a=0;$a<count($array);$a++){
+        $array[$a][$propiedad]=[];
+        $roles=[];
+         for($b=0;$b<count($array[$a]->$param);$b++){
+        array_push($roles,$array[$a]->$param[$b]['name']);
+           }
+            $array[$a][$propiedad]=$roles;
+            array_push($arraynuevo,$array[$a]);       
+
+        }
+        return $arraynuevo;
+    
+    }
+    
+private function buscapropiedad($array,$param,$search){
+    ///array es todo el arreglo por ejemplo usuarios con sus permisos y sus roles
+    ///param es la relacion a buscar por ejemplo usuarios.roles 
+    ///seaarch es que buscamos en ese ejemplo se buscaria admin en usarios.roles puede ser un permiso en userios.permisos
+       $nuevoarray=[];
+    for($a=0;$a<count($array);$a++){
+    
+        for($b=0;$b<count($array[$a]->$param);$b++){
+            if($array[$a]->$param[$b]['name']==$search){
+                array_push($nuevoarray,$array[$a]);
+            }
+        }
+    }
+    return $nuevoarray;
+}
     private function depura($array){
         $users=[];
         $delete=[];

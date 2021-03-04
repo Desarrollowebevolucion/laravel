@@ -6,18 +6,21 @@ use App\Models\User;
 use App\Models\cuenta;
 use App\Models\empresa;
 use App\Models\producto;
-use App\Models\solicitud;
+use App\Mail\MailWelcome;
 
+use App\Models\solicitud;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\MailWelcome;
 
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Notifications\Notifiable;
 use PhpParser\Node\Expr\AssignOp\Concat;
+use Spatie\Permission\Models\Permission;
+use App\Http\Requests\Requestusercreated as uservalidation;
 use App\Repositories\UserTables\UserTableInterface as UserTableInterface;
 
 class UsersController extends Controller
@@ -313,6 +316,12 @@ public function unlockuser(Request $request){
 //return $this->allusers();
 
 }
+public function addrolesandpermissionsuser(Request $request)
+{
+    $user = $this->tableuser->updateuserroles($request);
+    return response()->json(['data'=>$user,'code'=>200]);
+
+}
 public function destroypermisos($request){
     DB::table('permissions_user_user')
       ->where([['padre_id',"=",auth()->user()->id],['hijo_id','=',$request]])
@@ -322,10 +331,11 @@ public function destroypermisos($request){
        $users=[];
        $delete=[];
        $mebloquearon=[];
-       for($b=0;$b<count($array);$b++){
+       for($b=0;$b<count($array);$b++){///dos posiciones
+     
         for($a=0;$a<count($array[$b]);$a++){
             if($array[$b][$a]['status']=='Active'){
-      if($array[$b][$a]['pivot']['activo']==1||$array[$b][$a]['pivot']['activo']==NULL){
+               if($array[$b][$a]['pivot']['activo']==1||$array[$b][$a]['pivot']['activo']==NULL){
                      array_push($users,$array[$b][$a]);
                     }else{
                         if($array[$b][$a]['pivot']['bloquea']==auth()->user()->id){
@@ -387,6 +397,21 @@ public function destroypermisos($request){
            $userscomplete=$this->depura($array);
            return $userscomplete;
     }
+    
+    public function restoreuser(Request $request){
+
+        $userin = User::findorfail($request->id);
+        $userin->status = 'Active';
+        $userin->save();
+        return response()->json(
+            [
+                'data' =>
+                ['message' => 'No Content'],
+                'code' => 204,
+                'request'=>$request->id
+            ]
+        );
+    }
     public function allusersonlypost(){ /////regresar solo usuarios activos, evitando solicitudes enviadas recibvidas etc
      return response()->json(['code' => 200,'data'=>$this->tableuser->allusersquery()->get()]);
     }
@@ -398,9 +423,43 @@ public function destroypermisos($request){
         }
         return response()->json( ['status' => 'success'] );
     }
+    public function updateuser(UpdateUserRequest $request)
+    {
+     $user = $this->tableuser->updateuser($request);
+     return response()->json(['data'=>$user,'code'=>200]);
 
+    }
+    public function lockadmin(UpdateUserRequest $request)
+    {
+     $user = $this->tableuser->lockuseradmin($request);
+     return response()->json(['data'=>$user,'code'=>200]);
+
+    }
+    public function unlockadmin(UpdateUserRequest $request)
+    {
+     $user = $this->tableuser->unlockuseradmin($request);
+     return response()->json(['data'=>$user,'code'=>200]);
+
+    }
+    public function resetpassword(Request $request)
+    {
+        $claveinicial = "evolucionweb";
+        $userin = User::findorfail($request->id);
+        $userin->password = bcrypt($claveinicial);
+        $userin->save();
+        return response()->json(['data'=>$userin,'code'=>200]);
+    }
 
     ///////// con interface desde el  backend
+    function interfaceuseradmin(Request $request){
+        $sorter         = $request->input('sorter');
+        $tableFilter    = $request->input('tableFilter');
+        $columnFilter   = $request->input('columnFilter');
+        $itemsLimit     = $request->input('itemsLimit');
+        $pagecurrent    =$request->input('currentpage');
+        $users = $this->tableuser->getalladmin( $sorter, $tableFilter, $columnFilter, $itemsLimit,$pagecurrent);
+        return response()->json(['data'=>$users[0],'count'=>$users[2],'other'=>$users[1]]);
+    }
     function interfaceuser(Request $request){
         $sorter         = $request->input('sorter');
         $tableFilter    = $request->input('tableFilter');
@@ -409,5 +468,16 @@ public function destroypermisos($request){
         $pagecurrent    =$request->input('currentpage');
         $users = $this->tableuser->getall( $sorter, $tableFilter, $columnFilter, $itemsLimit,$pagecurrent);
         return response()->json(['data'=>$users[0],'count'=>$users[1]]);
+    }
+    public function getallusers(Request $request){
+        
+        $users = $this->tableuser->getallusers();
+        return response()->json(['data'=>$users[0],'other'=>$users[1],'count'=>count($users[0]),'code'=>200]);
+    }
+    public function created(uservalidation $request){
+        $users = $this->tableuser->create($request);
+        return response()->json(['data'=>$users,'code'=>200]);
+
+       // $users?$this->getallusers($request):'';
     }
 }

@@ -77,6 +77,22 @@ class User extends Authenticatable implements JWTSubject
     //];
 
     protected $guard_name = 'api';
+
+                public function scopeUserreturn($query,$id){
+             return User::where('id',$id)->with(['roles'=>function($query){$query->with('permissions');}])->with('permissions')->get();
+
+
+                }
+    public function scopeAllusersqueryadmin($query){
+        return $query->where('id',"!=",auth()->user()->id)->where('status',"Active")
+        ->with(['roles'=>function($query){$query->with('permissions');}])
+       ->with('permissions');
+        }
+        public function scopeAllusersnotqueryadmin($query){
+            return $query->where('id',"!=",auth()->user()->id)->where('status',"!=","Active")
+            ->with(['roles'=>function($query){$query->with('permissions');}])
+           ->with('permissions');
+            }
     public function empresa()
     {
         return $this->belongsToMany(empresa::class);
