@@ -88,7 +88,7 @@ class AuthController extends Controller
        $array = array(0 => 'blue', 1 => 'red', 2 => 'gris', 3 => 'red');
 
         $key = in_array('as', $array); // $key = 2;
-            return $key;
+            return "todo super ok";
        return User::Userreturn(2);
        $db=Role::usersComplete();
        return $db->get();
