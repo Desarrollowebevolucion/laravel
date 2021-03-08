@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['middleware' => 'api'], function ($router) {
-    Route::post('pruebas', 'AuthController@pruebas');
     Route::get('langlist', 'LocaleController@getLangList');
     Route::post('menu', 'MenuController@index');
     Route::post('login', 'AuthController@login');
@@ -131,6 +130,7 @@ Route::group(['middleware' => 'api'], function ($router) {
         Route::get('/roles/move/move-down',    'RolesController@moveDown')->name('roles.down');
 
     });
+    Route::post('pruebas', 'AuthController@pruebas');
 
     Route::post('lazyTable', 'LazyTableController@index');
 });
